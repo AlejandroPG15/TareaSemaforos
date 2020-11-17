@@ -6,21 +6,50 @@ public class Cuadrilatero {
     private static final int MAX_AVAILABLE = 2;
 
 
-    private final Semaphore available = new Semaphore(MAX_AVAILABLE, true);
+    private final Semaphore available = new Semaphore(MAX_AVAILABLE, false);
 
-    public void AddParticipante(Luchador luchador) throws InterruptedException {
-        available.acquire();
-    }
+    private Luchador luchadorGan;
 
-    public void seleccionGanador(Luchador luchador) {
-        boolean per = new Random().nextBoolean();
-        String luch_gan;
+    public void pelearse(Luchador luchador) throws InterruptedException {
+        try {
+            System.out.println("El " + luchador.getName() + " esta que arde.");
+            available.acquire();
+            System.out.println("El " + luchador.getName() + " entra al ring.");
 
-        if(per = true) {
-            luch_gan = luchador;
+            Random d = new Random();
+            Thread.sleep(d.nextInt(1000));
+
+            if (luchadorGan == null) {
+                System.out.println(luchador.getName() + " ha sido el mas rapido.");
+                luchadorGan = luchador;
+            } else {
+
+                System.out.println(luchador.getName() + " y " + luchadorGan.getName() + " van a comenzar.");
+                luchadorGan = seleccionGanador(luchador, luchadorGan);
+                System.out.println("El ganador es " + luchadorGan.getName());
+                available.release();
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        available.release();
+
+    }
+
+    public void seleccionGanador(Luchador luchador, Luchador luchadorGan) {
+        Random r = new Random();
+
+        if (r.nextBoolean()) {
+            return luchadorGan;
+        } else {
+            return luchador;
+        }
+
+
+
+
+
     }
 
 }
